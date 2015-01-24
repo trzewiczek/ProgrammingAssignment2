@@ -1,15 +1,36 @@
-## Put comments here that give an overall description of what your
-## functions do
+## Functions for creating and solving matrices using "special"
+## optimized matrix object that can cache its solved result.
 
-## Write a short comment describing this function
-
+## Create a "special" matrix able to cache its solved version
 makeCacheMatrix <- function(x = matrix()) {
+  inversed <- NULL
 
+  get <- function() x
+  set <- function(nx) {
+    x <<- nx
+    inversed <<- NULL
+  }
+
+  getInversed <- function() inversed
+  setInversed <- function(ninv) inversed <<- ninv
+
+  list(get = get, set = set,
+       getInversed = getInversed,
+       setInversed = setInversed)
 }
 
 
-## Write a short comment describing this function
-
+## Solve the "special" matrix x using cached data if available
+## or solving the matrix and caching result in x object
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  inversed <- x$getInversed()
+  if(!is.null(inversed)) {
+    message("Getting cached data")
+    return(inversed)
+  }
+
+  m <- x$get()
+  inversed <- solve(m, ...)
+  x$setInversed(inversed)
+  inversed
 }
